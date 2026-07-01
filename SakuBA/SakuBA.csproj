@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>SakuBA</AssemblyName>
+    <RootNamespace>SakuBA</RootNamespace>
+    <DebugType>embedded</DebugType>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <SelfContained>false</SelfContained>
+    <RollForward>Major</RollForward>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AcceptEula>wix7</AcceptEula>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\StoreLogo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.BootstrapperApplicationApi" Version="7.0.0" />
+  </ItemGroup>
+</Project>

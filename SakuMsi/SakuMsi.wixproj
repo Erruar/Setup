@@ -1,0 +1,14 @@
+<Project Sdk="WixToolset.Sdk/7.0.0">
+  <PropertyGroup>
+    <OutputName>SakuOverclock</OutputName>
+    <PublishDir Condition="'$(PublishDir)' == ''">$(MSBuildProjectDirectory)\..\..\Saku Overclock\bin\Release\net10.0-windows10.0.19041.0\win-x64\publish\</PublishDir>
+    <AcceptEula>wix7</AcceptEula>
+    <SuppressValidation>true</SuppressValidation> 
+    <DefineConstants>
+      $(DefineConstants);
+      PublishDir=$(PublishDir)
+    </DefineConstants>
+    <InstallerPlatform Condition=" '$(Platform)' == '' ">x64</InstallerPlatform>
+    <SuppressIces>ICE03;ICE60</SuppressIces>
+  </PropertyGroup>
+</Project>

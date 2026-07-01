@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <Package Name="Saku Overclock"
+           Manufacturer="Saku Labs Inc."
+           Version="!(bind.fileVersion.MainExeFile)"
+           UpgradeCode="78cca74b-3d55-43d6-b7c3-fd40b2832290"
+           Scope="perMachine"
+           Language="1033">
+
+    <SummaryInformation Description="Saku Overclock Installer" Manufacturer="Saku Labs Inc." />
+    
+    <MediaTemplate EmbedCab="yes" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Saku Overclock is already installed." />
+
+    <Icon Id="AppIcon" SourceFile="$(PublishDir)\Assets\WindowIcon.ico" />
+
+    <Feature Id="MainFeature" Level="1">
+      <ComponentGroupRef Id="HarvestedFiles" />
+      <ComponentRef Id="CompMainExe" />
+      <ComponentRef Id="CompService" />
+      <ComponentRef Id="CompDesktopSC" />
+      <ComponentRef Id="CompStartMenuSC" />
+    </Feature>
+
+    <ComponentGroup Id="HarvestedFiles" Directory="INSTALLFOLDER">
+      <Files Include="$(PublishDir)\**">
+        <Exclude Files="$(PublishDir)\Saku Overclock.exe" />
+        <Exclude Files="$(PublishDir)\Saku Overclock.Service.exe" />
+      </Files>
+    </ComponentGroup>
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="Saku Overclock" />
+    </StandardDirectory>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="CompMainExe" Guid="2f2b7743-7104-4b70-955c-ee7cf31e4794" Bitness="always64">
+        <File Id="MainExeFile"
+              Source="$(PublishDir)\Saku Overclock.exe"
+              KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="CompService" Guid="03211375-68ba-4e8d-9a90-04d6bf828748" Bitness="always64">
+        <File Id="ServiceExeFile"
+              Source="$(PublishDir)\Saku Overclock.Service.exe"
+              KeyPath="yes" />
+
+        <ServiceInstall Id="SvcInstall"
+                        Name="SakuOverclockService"
+                        DisplayName="Saku Overclock Service"
+                        Description="Saku Overclock hardware access service"
+                        Type="ownProcess"
+                        Start="auto"
+                        Account="LocalSystem"
+                        ErrorControl="normal" />
+
+        <ServiceControl Id="SvcControl"
+                        Name="SakuOverclockService"
+                        Start="install"
+                        Stop="both"
+                        Remove="uninstall"
+                        Wait="yes" />
+
+        <RegistryValue Root="HKLM"
+                       Key="SYSTEM\CurrentControlSet\Services\SakuOverclockService"
+                       Name="DelayedAutostart"
+                       Type="integer"
+                       Value="1" />
+      </Component>
+    </DirectoryRef>
+
+    <StandardDirectory Id="DesktopFolder">
+      <Component Id="CompDesktopSC" Guid="946bfa25-f390-4a41-97bf-d4266aa90120" Bitness="always64">
+        <Shortcut Id="DesktopSC" 
+                  Name="Saku Overclock"
+                  Target="&quot;[INSTALLFOLDER]Saku Overclock.exe&quot;"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="AppIcon" />
+        <RegistryValue Root="HKCU" Key="Software\SakuLabs\SakuOverclock"
+                       Name="DesktopSC" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="SakuMenuDir" Name="Saku Overclock">
+        <Component Id="CompStartMenuSC" Guid="c8b31971-83ae-45e4-9b33-6d82a89e89ad" Bitness="always64">
+          <Shortcut Id="StartMenuSC" 
+                    Name="Saku Overclock"
+                    Target="&quot;[INSTALLFOLDER]Saku Overclock.exe&quot;"
+                    WorkingDirectory="INSTALLFOLDER"
+                    Icon="AppIcon" />
+          <RemoveFolder Id="RemoveSakuMenuDir" On="uninstall" Directory="SakuMenuDir" />
+          <RegistryValue Root="HKCU" Key="Software\SakuLabs\SakuOverclock"
+                         Name="StartMenuSC" Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </StandardDirectory>
+
+  </Package>
+</Wix>

@@ -1,0 +1,26 @@
+<Project Sdk="WixToolset.Sdk/7.0.0">
+  <PropertyGroup>
+    <OutputName>SakuOverclock-Setup</OutputName>
+    <PublishDir Condition="'$(PublishDir)' == ''">$(MSBuildProjectDirectory)\..\..\Saku Overclock\bin\Release\net10.0-windows10.0.19041.0\win-x64\publish\</PublishDir>
+    <SakuBAPath Condition="'$(SakuBAPath)' == ''">$(MSBuildProjectDirectory)\..\SakuBA\bin\Release\net10.0-windows\win-x64\SakuBA.exe</SakuBAPath>
+    <SakuBABinDir Condition="'$(SakuBABinDir)' == ''">$(MSBuildProjectDirectory)\..\SakuBA\bin\Release\net10.0-windows\win-x64</SakuBABinDir>
+    <DefineConstants>
+      $(DefineConstants);
+      PublishDir=$(PublishDir);
+      SakuBAPath=$(SakuBAPath);
+      SakuBABinDir=$(SakuBABinDir)
+    </DefineConstants>
+    <OutputType>Bundle</OutputType>
+    <AcceptEula>wix7</AcceptEula>
+    <SuppressValidation>true</SuppressValidation>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SakuMsi\SakuMsi.wixproj" />
+    <ProjectReference Include="..\SakuBA\SakuBA.csproj">
+      <OutputItemType>BootstrapperApplicationProject</OutputItemType>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Bal.wixExt" Version="7.0.0" />
+  </ItemGroup>
+</Project>
