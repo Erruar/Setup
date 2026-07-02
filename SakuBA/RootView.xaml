@@ -108,11 +108,11 @@
                 </StackPanel>
 
                 <Grid Grid.Row="2" Margin="0,0,0,5">
-                    <Grid
+                    <Border Height="3" CornerRadius="4"
                         Visibility="{Binding IsProgressState, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <ProgressBar Value="{Binding ProgressViewModel.Progress}"
                                      Style="{StaticResource AppProgressBarStyle}" />
-                    </Grid>
+                    </Border>
 
                     <Grid
                         Visibility="{Binding IsNotProgressState, Converter={StaticResource BooleanToVisibilityConverter}}">
