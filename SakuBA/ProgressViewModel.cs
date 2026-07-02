@@ -8,18 +8,15 @@ public class ProgressViewModel : PropertyNotifyBase
 {
     private static readonly Dictionary<string, int> ExecutingPackageOrderIndex = new();
 
-    private readonly RootViewModel root;
-    private int progressPhases;
-    private int progress;
-    private int cacheProgress;
-    private int executeProgress;
-    private string package = string.Empty;
-    private string message = string.Empty;
+    private readonly RootViewModel _root;
+    private int _progressPhases;
+    private int _cacheProgress;
+    private int _executeProgress;
 
     public ProgressViewModel(RootViewModel root)
     {
-        this.root = root;
-        this.root.PropertyChanged += RootPropertyChanged;
+        _root = root;
+        _root.PropertyChanged += RootPropertyChanged;
 
         SakuBA_App.Model?.Bootstrapper.ExecutePackageBegin += ExecutePackageBegin;
         SakuBA_App.Model?.Bootstrapper.ExecutePackageComplete += ExecutePackageComplete;
@@ -35,16 +32,16 @@ public class ProgressViewModel : PropertyNotifyBase
         SakuBA_App.Model?.Bootstrapper.CacheComplete += CacheComplete;
     }
 
-    public bool ProgressEnabled => root.InstallState == InstallationState.Applying;
+    public bool ProgressEnabled => _root.InstallState == InstallationState.Applying;
 
     public int Progress
     {
-        get => progress;
+        get;
         set
         {
-            if (progress != value)
+            if (field != value)
             {
-                progress = value;
+                field = value;
                 base.OnPropertyChanged("Progress");
             }
         }
@@ -52,29 +49,29 @@ public class ProgressViewModel : PropertyNotifyBase
 
     public string Package
     {
-        get => package;
+        get;
         set
         {
-            if (package != value)
+            if (field != value)
             {
-                package = value;
+                field = value;
                 base.OnPropertyChanged("Package");
             }
         }
-    }
+    } = string.Empty;
 
     public string Message
     {
-        get => message;
+        get;
         set
         {
-            if (message != value)
+            if (field != value)
             {
-                message = value;
+                field = value;
                 base.OnPropertyChanged("Message");
             }
         }
-    }
+    } = string.Empty;
 
     void RootPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -109,7 +106,7 @@ public class ProgressViewModel : PropertyNotifyBase
         {
             Package = SakuBA_App.Model?.GetPackageName(e.PackageId) ?? string.Empty;
             Message = $"Processing: {Package}";
-            e.Cancel = root.Canceled;
+            e.Cancel = _root.Canceled;
         }
     }
 
@@ -123,14 +120,14 @@ public class ProgressViewModel : PropertyNotifyBase
 
     private void ApplyBegin(object? sender, ApplyBeginEventArgs e)
     {
-        progressPhases = e.PhaseCount;
+        _progressPhases = e.PhaseCount;
     }
 
     private void ApplyProgress(object? sender, ProgressEventArgs e)
     {
         lock (this)
         {
-            e.Cancel = root.Canceled;
+            e.Cancel = _root.Canceled;
         }
     }
 
@@ -138,9 +135,9 @@ public class ProgressViewModel : PropertyNotifyBase
     {
         lock (this)
         {
-            cacheProgress = e.OverallPercentage;
-            Progress = (cacheProgress + executeProgress) / progressPhases;
-            e.Cancel = root.Canceled;
+            _cacheProgress = e.OverallPercentage;
+            Progress = (_cacheProgress + _executeProgress) / _progressPhases;
+            e.Cancel = _root.Canceled;
         }
     }
 
@@ -148,9 +145,9 @@ public class ProgressViewModel : PropertyNotifyBase
     {
         lock (this)
         {
-            cacheProgress = e.OverallPercentage;
-            Progress = (cacheProgress + executeProgress) / progressPhases;
-            e.Cancel = root.Canceled;
+            _cacheProgress = e.OverallPercentage;
+            Progress = (_cacheProgress + _executeProgress) / _progressPhases;
+            e.Cancel = _root.Canceled;
         }
     }
 
@@ -158,9 +155,9 @@ public class ProgressViewModel : PropertyNotifyBase
     {
         lock (this)
         {
-            cacheProgress = e.OverallPercentage;
-            Progress = (cacheProgress + executeProgress) / progressPhases;
-            e.Cancel = root.Canceled;
+            _cacheProgress = e.OverallPercentage;
+            Progress = (_cacheProgress + _executeProgress) / _progressPhases;
+            e.Cancel = _root.Canceled;
         }
     }
 
@@ -168,9 +165,9 @@ public class ProgressViewModel : PropertyNotifyBase
     {
         lock (this)
         {
-            cacheProgress = e.OverallPercentage;
-            Progress = (cacheProgress + executeProgress) / progressPhases;
-            e.Cancel = root.Canceled;
+            _cacheProgress = e.OverallPercentage;
+            Progress = (_cacheProgress + _executeProgress) / _progressPhases;
+            e.Cancel = _root.Canceled;
         }
     }
 
@@ -178,8 +175,8 @@ public class ProgressViewModel : PropertyNotifyBase
     {
         lock (this)
         {
-            cacheProgress = 100;
-            Progress = (cacheProgress + executeProgress) / progressPhases;
+            _cacheProgress = 100;
+            Progress = (_cacheProgress + _executeProgress) / _progressPhases;
         }
     }
 
@@ -187,15 +184,15 @@ public class ProgressViewModel : PropertyNotifyBase
     {
         lock (this)
         {
-            executeProgress = e.OverallPercentage;
-            Progress = (cacheProgress + executeProgress) / progressPhases;
+            _executeProgress = e.OverallPercentage;
+            Progress = (_cacheProgress + _executeProgress) / _progressPhases;
 
             if (SakuBA_App.Model?.Command?.Display == Display.Embedded)
             {
                 SakuBA_App.Model.Engine?.SendEmbeddedProgress(e.ProgressPercentage, Progress);
             }
 
-            e.Cancel = root.Canceled;
+            e.Cancel = _root.Canceled;
         }
     }
 }

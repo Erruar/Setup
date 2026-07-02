@@ -7,7 +7,7 @@
         MinWidth="637" MinHeight="411"
         Background="Transparent"
         WindowStartupLocation="CenterScreen"
-        Closing="Window_Closing" AllowsTransparency="True">
+        Closing="Window_Closing">
 
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="32"
@@ -24,7 +24,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border CornerRadius="4" Background="#202020" BorderBrush="#3b3c3d" BorderThickness="1">
+    <Border CornerRadius="8" Background="#202020" BorderBrush="#3b3c3d" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="32" />

@@ -1,7 +1,6 @@
-namespace SakuBA
+namespace SakuBA;
+
+internal class Hresult
 {
-    internal class Hresult
-    {
-        public static bool Succeeded(int status) => status >= 0;
-    }
+    public static bool Succeeded(int status) => status >= 0;
 }

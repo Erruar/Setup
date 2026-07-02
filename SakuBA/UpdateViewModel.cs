@@ -17,20 +17,16 @@ public enum UpdateState
 
 public class UpdateViewModel : PropertyNotifyBase
 {
-    private RootViewModel root;
-    private UpdateState state;
-    private ICommand? updateCommand;
-    private string updateVersion = string.Empty;
-    private string updateChanges = string.Empty;
+    private readonly RootViewModel _root;
 
     public UpdateViewModel(RootViewModel root)
     {
-        this.root = root;
+        this._root = root;
         SakuBA_App.Model?.Bootstrapper.DetectUpdateBegin += DetectUpdateBegin;
         SakuBA_App.Model?.Bootstrapper.DetectUpdate += DetectUpdate;
         SakuBA_App.Model?.Bootstrapper.DetectUpdateComplete += DetectUpdateComplete;
         SakuBA_App.Model?.Bootstrapper.DetectComplete += DetectComplete;
-        this.root.PropertyChanged += new PropertyChangedEventHandler(RootPropertyChanged);
+        this._root.PropertyChanged += new PropertyChangedEventHandler(RootPropertyChanged);
         State = UpdateState.Initializing;
     }
 
@@ -48,7 +44,7 @@ public class UpdateViewModel : PropertyNotifyBase
     {
         get
         {
-            switch (root.InstallState)
+            switch (_root.InstallState)
             {
                 case InstallationState.Waiting:
                 case InstallationState.Applied:
@@ -64,11 +60,8 @@ public class UpdateViewModel : PropertyNotifyBase
     {
         get
         {
-            if (updateCommand == null)
-            {
-                updateCommand = new RelayCommand(_ => SakuBA_App.Plan(LaunchAction.UpdateReplace), _ => CanUpdate);
-            }
-            return updateCommand;
+            field ??= new RelayCommand(_ => SakuBA_App.Plan(LaunchAction.UpdateReplace), _ => CanUpdate);
+            return field;
         }
     }
 
@@ -76,12 +69,12 @@ public class UpdateViewModel : PropertyNotifyBase
 
     public UpdateState State
     {
-        get => state;
+        get;
         set
         {
-            if (state != value)
+            if (field != value)
             {
-                state = value;
+                field = value;
                 base.OnPropertyChanged("State");
                 base.OnPropertyChanged("CanUpdate");
                 base.OnPropertyChanged("CheckingEnabled");
@@ -92,29 +85,29 @@ public class UpdateViewModel : PropertyNotifyBase
 
     public string UpdateVersion
     {
-        get => updateVersion;
+        get;
         set
         {
-            if (updateVersion != value)
+            if (field != value)
             {
-                updateVersion = value;
+                field = value;
                 base.OnPropertyChanged("UpdateVersion");
             }
         }
-    }
+    } = string.Empty;
 
     public string UpdateChanges
     {
-        get => updateChanges;
+        get;
         set
         {
-            if (updateChanges != value)
+            if (field != value)
             {
-                updateChanges = value;
+                field = value;
                 base.OnPropertyChanged("UpdateChanges");
             }
         }
-    }
+    } = string.Empty;
 
     private void DetectUpdateBegin(object? sender, DetectUpdateBeginEventArgs e)
     {

@@ -11,27 +11,15 @@ namespace SakuBA;
 
 public class InstallationViewModel : PropertyNotifyBase
 {
-    private readonly RootViewModel root;
-    private readonly Dictionary<string, int> downloadRetries;
-    private bool downgrade;
-    private string downgradeMessage = string.Empty;
-
-    private ICommand? installCommand;
-    private ICommand? repairCommand;
-    private ICommand? uninstallCommand;
-    private ICommand? openLogCommand;
-    private ICommand? openLogFolderCommand;
-    private ICommand? tryAgainCommand;
-    private ICommand? launchGitHubCommand;
-
-    private string message = string.Empty;
+    private readonly RootViewModel _root;
+    private readonly Dictionary<string, int> _downloadRetries;
 
     public InstallationViewModel(RootViewModel root)
     {
-        this.root = root;
-        downloadRetries = new Dictionary<string, int>();
+        _root = root;
+        _downloadRetries = new Dictionary<string, int>();
 
-        this.root.PropertyChanged += new PropertyChangedEventHandler(RootPropertyChanged);
+        _root.PropertyChanged += new PropertyChangedEventHandler(RootPropertyChanged);
 
         SakuBA_App.Model?.Bootstrapper.DetectBegin += DetectBegin;
         SakuBA_App.Model?.Bootstrapper.DetectRelatedBundle += DetectedRelatedBundle;
@@ -69,25 +57,25 @@ public class InstallationViewModel : PropertyNotifyBase
 
     public string Message
     {
-        get => message;
+        get;
         set
         {
-            if (message != value)
+            if (field != value)
             {
-                message = value;
+                field = value;
                 base.OnPropertyChanged("Message");
             }
         }
-    }
+    } = string.Empty;
 
     public bool Downgrade
     {
-        get => downgrade;
+        get;
         set
         {
-            if (downgrade != value)
+            if (field != value)
             {
-                downgrade = value;
+                field = value;
                 base.OnPropertyChanged("Downgrade");
             }
         }
@@ -95,41 +83,41 @@ public class InstallationViewModel : PropertyNotifyBase
 
     public string DowngradeMessage
     {
-        get => downgradeMessage;
+        get;
         set
         {
-            if (downgradeMessage != value)
+            if (field != value)
             {
-                downgradeMessage = value;
+                field = value;
                 base.OnPropertyChanged("DowngradeMessage");
             }
         }
-    }
+    } = string.Empty;
 
     public ICommand LaunchGitHubCommand
     {
         get
         {
-            launchGitHubCommand ??= new RelayCommand(_ => SakuBA_App.LaunchUrl(GitHubUrl), _ => true);
-            return launchGitHubCommand;
+            field ??= new RelayCommand(_ => SakuBA_App.LaunchUrl(GitHubUrl), _ => true);
+            return field;
         }
     }
 
-    public ICommand CloseCommand => root.CloseCommand;
+    public ICommand CloseCommand => _root.CloseCommand;
 
     public bool IsComplete => IsSuccessfulCompletion || IsFailedCompletion;
-    public bool IsSuccessfulCompletion => root.InstallState == InstallationState.Applied;
-    public bool IsFailedCompletion => root.InstallState == InstallationState.Failed;
+    public bool IsSuccessfulCompletion => _root.InstallState == InstallationState.Applied;
+    public bool IsFailedCompletion => _root.InstallState == InstallationState.Failed;
 
     public ICommand InstallCommand
     {
         get
         {
-            installCommand ??= new RelayCommand(
+            field ??= new RelayCommand(
                 _ => SakuBA_App.Plan(LaunchAction.Install),
-                _ => root.DetectState == DetectionState.Absent && root.UpgradeDetectState != UpgradeDetectionState.Newer &&
-                     root.InstallState == InstallationState.Waiting);
-            return installCommand;
+                _ => _root.DetectState == DetectionState.Absent && _root.UpgradeDetectState != UpgradeDetectionState.Newer &&
+                     _root.InstallState == InstallationState.Waiting);
+            return field;
         }
     }
 
@@ -139,11 +127,11 @@ public class InstallationViewModel : PropertyNotifyBase
     {
         get
         {
-            if (repairCommand == null)
+            if (field == null)
             {
-                repairCommand = new RelayCommand(_ => SakuBA_App.Plan(LaunchAction.Repair), _ => root.DetectState == DetectionState.Present && root.InstallState == InstallationState.Waiting);
+                field = new RelayCommand(_ => SakuBA_App.Plan(LaunchAction.Repair), _ => _root.DetectState == DetectionState.Present && _root.InstallState == InstallationState.Waiting);
             }
-            return repairCommand;
+            return field;
         }
     }
 
@@ -153,11 +141,11 @@ public class InstallationViewModel : PropertyNotifyBase
     {
         get
         {
-            if (uninstallCommand == null)
+            if (field == null)
             {
-                uninstallCommand = new RelayCommand(_ => SakuBA_App.Plan(LaunchAction.Uninstall), _ => root.DetectState == DetectionState.Present && root.InstallState == InstallationState.Waiting);
+                field = new RelayCommand(_ => SakuBA_App.Plan(LaunchAction.Uninstall), _ => _root.DetectState == DetectionState.Present && _root.InstallState == InstallationState.Waiting);
             }
-            return uninstallCommand;
+            return field;
         }
     }
 
@@ -167,11 +155,11 @@ public class InstallationViewModel : PropertyNotifyBase
     {
         get
         {
-            if (openLogCommand == null)
+            if (field == null)
             {
-                openLogCommand = new RelayCommand(_ => SakuBA_App.OpenLog(SakuBA_App.Model?.Engine?.GetVariableString("WixBundleLog") ?? string.Empty));
+                field = new RelayCommand(_ => SakuBA_App.OpenLog(SakuBA_App.Model?.Engine?.GetVariableString("WixBundleLog") ?? string.Empty));
             }
-            return openLogCommand;
+            return field;
         }
     }
 
@@ -179,12 +167,12 @@ public class InstallationViewModel : PropertyNotifyBase
     {
         get
         {
-            if (openLogFolderCommand == null)
+            if (field == null)
             {
                 var logFolder = Path.GetDirectoryName(SakuBA_App.Model?.Engine?.GetVariableString("WixBundleLog") ?? "");
-                openLogFolderCommand = new RelayCommand(_ => SakuBA_App.OpenLog(logFolder ?? ""));
+                field = new RelayCommand(_ => SakuBA_App.OpenLog(logFolder ?? ""));
             }
-            return openLogFolderCommand;
+            return field;
         }
     }
 
@@ -192,13 +180,13 @@ public class InstallationViewModel : PropertyNotifyBase
     {
         get
         {
-            tryAgainCommand ??= new RelayCommand(_ =>
+            field ??= new RelayCommand(_ =>
             {
-                root.Canceled = false;
+                _root.Canceled = false;
                 if (SakuBA_App.Model != null)
                     SakuBA_App.Plan(SakuBA_App.Model.PlannedAction);
             }, _ => IsFailedCompletion);
-            return tryAgainCommand;
+            return field;
         }
     }
 
@@ -206,10 +194,10 @@ public class InstallationViewModel : PropertyNotifyBase
     {
         get
         {
-            switch (root.InstallState)
+            switch (_root.InstallState)
             {
                 case InstallationState.Applied: return "Complete";
-                case InstallationState.Failed: return root.Canceled ? "Cancelled" : "Failed";
+                case InstallationState.Failed: return _root.Canceled ? "Cancelled" : "Failed";
                 default: return "Unknown";
             }
         }
@@ -217,7 +205,7 @@ public class InstallationViewModel : PropertyNotifyBase
 
     private void DetectBegin(object? sender, DetectBeginEventArgs e)
     {
-        root.DetectState = RegistrationType.Full == e.RegistrationType ? DetectionState.Present : DetectionState.Absent;
+        _root.DetectState = RegistrationType.Full == e.RegistrationType ? DetectionState.Present : DetectionState.Absent;
         SakuBA_App.Model?.PlannedAction = LaunchAction.Unknown;
     }
 
@@ -227,14 +215,14 @@ public class InstallationViewModel : PropertyNotifyBase
         {
             if (SakuBA_App.Model?.Engine?.CompareVersions(Version, e.Version) > 0)
             {
-                if (root.UpgradeDetectState == UpgradeDetectionState.None)
+                if (_root.UpgradeDetectState == UpgradeDetectionState.None)
                 {
-                    root.UpgradeDetectState = UpgradeDetectionState.Older;
+                    _root.UpgradeDetectState = UpgradeDetectionState.Older;
                 }
             }
             else
             {
-                root.UpgradeDetectState = UpgradeDetectionState.Newer;
+                _root.UpgradeDetectState = UpgradeDetectionState.Newer;
             }
         }
 
@@ -246,7 +234,7 @@ public class InstallationViewModel : PropertyNotifyBase
 
     private void DetectComplete(object? sender, DetectCompleteEventArgs e)
     {
-        root.InstallState = InstallationState.Waiting;
+        _root.InstallState = InstallationState.Waiting;
 
         if (SakuBA_App.Model != null && SakuBA_App.Model.Command != null)
         {
@@ -257,7 +245,7 @@ public class InstallationViewModel : PropertyNotifyBase
             }
             else if (Hresult.Succeeded(e.Status))
             {
-                if (root.UpgradeDetectState == UpgradeDetectionState.Newer)
+                if (_root.UpgradeDetectState == UpgradeDetectionState.Newer)
                 {
                     Downgrade = true;
                     DowngradeMessage = "There is already a newer version of Saku Overclock installed on this machine.";
@@ -267,7 +255,7 @@ public class InstallationViewModel : PropertyNotifyBase
                 {
                     // Layout handled separately
                 }
-                else if (SakuBA_App.Model?.Command.Display != Display.Full && SakuBA_App.Model?.Engine != null)
+                else if (SakuBA_App.Model.Command.Display != Display.Full && SakuBA_App.Model.Engine != null)
                 {
                     SakuBA_App.Model.Engine.Log(LogLevel.Verbose, "Invoking automatic plan for non-interactive mode.");
                     SakuBA_App.Plan(SakuBA_App.Model.Command.Action);
@@ -275,10 +263,10 @@ public class InstallationViewModel : PropertyNotifyBase
             }
             else
             {
-                root.InstallState = InstallationState.Failed;
+                _root.InstallState = InstallationState.Failed;
             }
         }
-        root.Dispatcher?.Invoke(CommandManager.InvalidateRequerySuggested);
+        _root.Dispatcher?.Invoke(CommandManager.InvalidateRequerySuggested);
     }
 
     private void PlanPackageBegin(object? sender, PlanPackageBeginEventArgs e)
@@ -293,39 +281,39 @@ public class InstallationViewModel : PropertyNotifyBase
     {
         if (Hresult.Succeeded(e.Status))
         {
-            root.PreApplyState = root.InstallState;
-            root.InstallState = InstallationState.Applying;
-            SakuBA_App.Model?.Engine?.Apply(root.ViewWindowHandle);
+            _root.PreApplyState = _root.InstallState;
+            _root.InstallState = InstallationState.Applying;
+            SakuBA_App.Model?.Engine?.Apply(_root.ViewWindowHandle);
         }
         else
         {
-            root.InstallState = InstallationState.Failed;
+            _root.InstallState = InstallationState.Failed;
         }
     }
 
     private void ApplyBegin(object? sender, ApplyBeginEventArgs e)
     {
-        downloadRetries.Clear();
+        _downloadRetries.Clear();
     }
 
     private void CacheAcquireBegin(object? sender, CacheAcquireBeginEventArgs e) { }
 
     private void CacheAcquireResolving(object? sender, CacheAcquireResolvingEventArgs e)
     {
-        if (e.Action == CacheResolveOperation.Download && !downloadRetries.ContainsKey(e.PackageOrContainerId ?? string.Empty))
+        if (e.Action == CacheResolveOperation.Download && !_downloadRetries.ContainsKey(e.PackageOrContainerId ?? string.Empty))
         {
-            downloadRetries.Add(e.PackageOrContainerId!, 0);
+            _downloadRetries.Add(e.PackageOrContainerId!, 0);
         }
     }
 
     private void CacheAcquireComplete(object? sender, CacheAcquireCompleteEventArgs e)
     {
-        if (e.Status < 0 && downloadRetries.TryGetValue(e.PackageOrContainerId ?? string.Empty, out var retries) && retries < 3)
+        if (e.Status < 0 && _downloadRetries.TryGetValue(e.PackageOrContainerId ?? string.Empty, out var retries) && retries < 3)
         {
-            downloadRetries[e.PackageOrContainerId!] = retries + 1;
+            _downloadRetries[e.PackageOrContainerId!] = retries + 1;
             switch (e.Status)
             {
-                case -2147023294: // ERROR_INSTALL_USEREXIT
+                case -2147023294: // ERROR_INSTALL_USER_EXIT
                 case -2147024894: // ERROR_FILE_NOT_FOUND
                 case -2147012889: // ERROR_INTERNET_NAME_NOT_RESOLVED
                     break;
@@ -341,11 +329,11 @@ public class InstallationViewModel : PropertyNotifyBase
 
     private void ExecuteError(object? sender, ErrorEventArgs e)
     {
-        if (!root.Canceled)
+        if (!_root.Canceled)
         {
-            if (InstallationState.Applying == root.InstallState && 1223 == e.ErrorCode)
+            if (InstallationState.Applying == _root.InstallState && 1223 == e.ErrorCode)
             {
-                root.InstallState = root.PreApplyState;
+                _root.InstallState = _root.PreApplyState;
             }
             else
             {
@@ -391,9 +379,9 @@ public class InstallationViewModel : PropertyNotifyBase
     {
         SakuBA_App.Model?.Result = e.Status;
 
-        if (root.InstallState != root.PreApplyState)
+        if (_root.InstallState != _root.PreApplyState)
         {
-            root.InstallState = Hresult.Succeeded(e.Status) ? InstallationState.Applied : InstallationState.Failed;
+            _root.InstallState = Hresult.Succeeded(e.Status) ? InstallationState.Applied : InstallationState.Failed;
         }
 
         if (Display.Full != SakuBA_App.Model?.Command?.Display)
@@ -410,13 +398,13 @@ public class InstallationViewModel : PropertyNotifyBase
             return;
         }
 
-        if (Hresult.Succeeded(e.Status) && LaunchAction.UpdateReplace == SakuBA_App.Model.PlannedAction || root.AutoClose)
+        if (Hresult.Succeeded(e.Status) && LaunchAction.UpdateReplace == SakuBA_App.Model.PlannedAction || _root.AutoClose)
         {
             if (SakuBA_App.View != null)
                 SakuBA_App.Dispatcher?.BeginInvoke(new Action(SakuBA_App.View.Close));
             return;
         }
 
-        root.Dispatcher?.Invoke(CommandManager.InvalidateRequerySuggested);
+        _root.Dispatcher?.Invoke(CommandManager.InvalidateRequerySuggested);
     }
 }

@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Threading;
 using WixToolset.BootstrapperApplicationApi;
 using Threading = System.Windows.Threading;
 
