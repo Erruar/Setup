@@ -7,7 +7,7 @@ public partial class RootView : Window
 {
     public RootView(RootViewModel viewModel)
     {
-        DataContext = viewModel;
+        DataContext = viewModel; 
         Loaded += (_, _) => SakuBA_App.Model?.Engine?.CloseSplashScreen();
         Closed += (_, _) => Dispatcher.InvokeShutdown();
         
