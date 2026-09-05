@@ -55,7 +55,9 @@
                         Type="ownProcess"
                         Start="auto"
                         Account="LocalSystem"
-                        ErrorControl="normal" />
+                        ErrorControl="normal">
+              <ServiceDependency Id="PawnIO"/>
+        </ServiceInstall>
 
         <ServiceControl Id="SvcControl"
                         Name="SakuOverclockService"
@@ -63,12 +65,6 @@
                         Stop="both"
                         Remove="uninstall"
                         Wait="yes" />
-
-        <RegistryValue Root="HKLM"
-                       Key="SYSTEM\CurrentControlSet\Services\SakuOverclockService"
-                       Name="DelayedAutostart"
-                       Type="integer"
-                       Value="1" />
       </Component>
     </DirectoryRef>
 
@@ -76,7 +72,7 @@
       <Component Id="CompDesktopSC" Guid="946bfa25-f390-4a41-97bf-d4266aa90120" Bitness="always64">
         <Shortcut Id="DesktopSC" 
                   Name="Saku Overclock"
-                  Target="&quot;[INSTALLFOLDER]Saku Overclock.exe&quot;"
+                  Target="[#MainExeFile]"
                   WorkingDirectory="INSTALLFOLDER"
                   Icon="AppIcon" />
         <RegistryValue Root="HKCU" Key="Software\SakuLabs\SakuOverclock"
@@ -89,7 +85,7 @@
         <Component Id="CompStartMenuSC" Guid="c8b31971-83ae-45e4-9b33-6d82a89e89ad" Bitness="always64">
           <Shortcut Id="StartMenuSC" 
                     Name="Saku Overclock"
-                    Target="&quot;[INSTALLFOLDER]Saku Overclock.exe&quot;"
+                    Target="[#MainExeFile]"
                     WorkingDirectory="INSTALLFOLDER"
                     Icon="AppIcon" />
           <RemoveFolder Id="RemoveSakuMenuDir" On="uninstall" Directory="SakuMenuDir" />
