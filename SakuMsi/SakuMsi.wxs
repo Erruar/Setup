@@ -11,7 +11,8 @@
     <SummaryInformation Description="Saku Overclock Installer" Manufacturer="Saku Labs Inc." />
     
     <MediaTemplate EmbedCab="yes" />
-    <MajorUpgrade DowngradeErrorMessage="A newer version of Saku Overclock is already installed." />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Saku Overclock is already installed." 
+                  Schedule="afterInstallInitialize"/>
 
     <Icon Id="AppIcon" SourceFile="$(PublishDir)\Assets\WindowIcon.ico" />
 
@@ -39,6 +40,7 @@
         <File Id="MainExeFile"
               Source="$(PublishDir)\Saku Overclock.exe"
               KeyPath="yes" />
+        <RemoveFile Id="PurgeAppFolder" Name="*.*" On="uninstall" />
       </Component>
     </DirectoryRef>
 
@@ -75,7 +77,7 @@
                   Target="[#MainExeFile]"
                   WorkingDirectory="INSTALLFOLDER"
                   Icon="AppIcon" />
-        <RegistryValue Root="HKCU" Key="Software\SakuLabs\SakuOverclock"
+        <RegistryValue Root="HKLM" Key="Software\SakuLabs\SakuOverclock"
                        Name="DesktopSC" Type="integer" Value="1" KeyPath="yes" />
       </Component>
     </StandardDirectory>
@@ -89,7 +91,7 @@
                     WorkingDirectory="INSTALLFOLDER"
                     Icon="AppIcon" />
           <RemoveFolder Id="RemoveSakuMenuDir" On="uninstall" Directory="SakuMenuDir" />
-          <RegistryValue Root="HKCU" Key="Software\SakuLabs\SakuOverclock"
+          <RegistryValue Root="HKLM" Key="Software\SakuLabs\SakuOverclock"
                          Name="StartMenuSC" Type="integer" Value="1" KeyPath="yes" />
         </Component>
       </Directory>
