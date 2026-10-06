@@ -22,6 +22,7 @@
       <ComponentRef Id="CompService" />
       <ComponentRef Id="CompDesktopSC" />
       <ComponentRef Id="CompStartMenuSC" />
+      <ComponentRef Id="CompOverlayAutostart" />
     </Feature>
 
     <ComponentGroup Id="HarvestedFiles" Directory="INSTALLFOLDER">
@@ -70,6 +71,17 @@
       </Component>
     </DirectoryRef>
 
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="CompOverlayAutostart" Guid="bcb2ff69-bbc3-47b3-8a0e-1691e2a4f49f" Bitness="always64">
+        <RegistryValue Root="HKLM"
+                       Key="Software\Microsoft\Windows\CurrentVersion\Run"
+                       Name="SakuOverclockOverlay"
+                       Type="string"
+                       Value="&quot;[INSTALLFOLDER]Saku Overclock.Overlay.exe&quot;"
+                       KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
     <StandardDirectory Id="DesktopFolder">
       <Component Id="CompDesktopSC" Guid="946bfa25-f390-4a41-97bf-d4266aa90120" Bitness="always64">
         <Shortcut Id="DesktopSC" 
@@ -96,6 +108,30 @@
         </Component>
       </Directory>
     </StandardDirectory>
+
+    <CustomAction Id="SetLaunchOverlayAfterInstall"
+              Property="LaunchOverlayAfterInstall"
+              Value="&quot;[INSTALLFOLDER]Saku Overclock.Overlay.exe&quot;" />
+
+    <CustomAction Id="LaunchOverlayAfterInstall"
+              Execute="deferred"
+              Impersonate="yes"
+              Return="asyncNoWait"
+              Directory="INSTALLFOLDER"
+              ExeCommand="[CustomActionData]" />
+
+    <CustomAction Id="KillOverlayBeforeUninstall"
+              Execute="deferred"
+              Impersonate="no"
+              Return="ignore"
+              Directory="System64Folder"
+              ExeCommand="taskkill.exe /F /IM &quot;Saku Overclock.Overlay.exe&quot; /T" />
+
+    <InstallExecuteSequence>
+      <Custom Action="SetLaunchOverlayAfterInstall" Before="InstallFinalize">NOT Installed</Custom>
+      <Custom Action="LaunchOverlayAfterInstall" After="SetLaunchOverlayAfterInstall">NOT Installed</Custom>
+      <Custom Action="KillOverlayBeforeUninstall" Before="RemoveFiles">REMOVE="ALL"</Custom>
+    </InstallExecuteSequence>
 
   </Package>
 </Wix>
