@@ -116,7 +116,7 @@
     <CustomAction Id="LaunchOverlayAfterInstall"
               Execute="deferred"
               Impersonate="yes"
-              Return="asyncNoWait"
+              Return="ignore"
               Directory="INSTALLFOLDER"
               ExeCommand="[CustomActionData]" />
 
@@ -128,9 +128,15 @@
               ExeCommand="taskkill.exe /F /IM &quot;Saku Overclock.Overlay.exe&quot; /T" />
 
     <InstallExecuteSequence>
-      <Custom Action="SetLaunchOverlayAfterInstall" Before="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="LaunchOverlayAfterInstall" After="SetLaunchOverlayAfterInstall">NOT Installed</Custom>
-      <Custom Action="KillOverlayBeforeUninstall" Before="RemoveFiles">REMOVE="ALL"</Custom>
+      <Custom Action="SetLaunchOverlayAfterInstall"
+              Before="InstallFinalize"
+              Condition="NOT Installed" />
+      <Custom Action="LaunchOverlayAfterInstall"
+              After="SetLaunchOverlayAfterInstall"
+              Condition="NOT Installed" />
+      <Custom Action="KillOverlayBeforeUninstall"
+              Before="RemoveFiles"
+              Condition='REMOVE="ALL"' />
     </InstallExecuteSequence>
 
   </Package>
