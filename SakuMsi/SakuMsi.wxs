@@ -29,6 +29,7 @@
       <Files Include="$(PublishDir)\**">
         <Exclude Files="$(PublishDir)\Saku Overclock.exe" />
         <Exclude Files="$(PublishDir)\Saku Overclock.Service.exe" />
+        <Exclude Files="$(PublishDir)\Saku Overclock.Overlay.exe" />
       </Files>
     </ComponentGroup>
 
@@ -72,12 +73,20 @@
     </DirectoryRef>
 
     <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="CompOverlayExe" Guid="a12fa125-f121-5f21-e7ef-a3186aab4435" Bitness="always64">
+        <File Id="OverlayExeFile"
+              Source="$(PublishDir)\Saku Overclock.Overlay.exe"
+              KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="INSTALLFOLDER">
       <Component Id="CompOverlayAutostart" Guid="bcb2ff69-bbc3-47b3-8a0e-1691e2a4f49f" Bitness="always64">
         <RegistryValue Root="HKLM"
                        Key="Software\Microsoft\Windows\CurrentVersion\Run"
                        Name="SakuOverclockOverlay"
                        Type="string"
-                       Value="&quot;[INSTALLFOLDER]Saku Overclock.Overlay.exe&quot;"
+                       Value="&quot;[#OverlayExeFile]&quot;"
                        KeyPath="yes" />
       </Component>
     </DirectoryRef>
@@ -109,16 +118,12 @@
       </Directory>
     </StandardDirectory>
 
-    <CustomAction Id="SetLaunchOverlayAfterInstall"
-              Property="LaunchOverlayAfterInstall"
-              Value="&quot;[INSTALLFOLDER]Saku Overclock.Overlay.exe&quot;" />
-
     <CustomAction Id="LaunchOverlayAfterInstall"
-              Execute="deferred"
+              Execute="immediate"
               Impersonate="yes"
-              Return="ignore"
-              Directory="INSTALLFOLDER"
-              ExeCommand="[CustomActionData]" />
+              Return="asyncNoWait"
+              FileRef="OverlayExeFile"
+              ExeCommand="" />
 
     <CustomAction Id="KillOverlayBeforeUninstall"
               Execute="deferred"
@@ -128,11 +133,8 @@
               ExeCommand="taskkill.exe /F /IM &quot;Saku Overclock.Overlay.exe&quot; /T" />
 
     <InstallExecuteSequence>
-      <Custom Action="SetLaunchOverlayAfterInstall"
-              Before="InstallFinalize"
-              Condition="NOT Installed" />
       <Custom Action="LaunchOverlayAfterInstall"
-              After="SetLaunchOverlayAfterInstall"
+              After="InstallFinalize"
               Condition="NOT Installed" />
       <Custom Action="KillOverlayBeforeUninstall"
               Before="RemoveFiles"
