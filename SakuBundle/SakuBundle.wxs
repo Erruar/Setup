@@ -5,7 +5,7 @@
   <Bundle Name="Saku Overclock"
           Manufacturer="Saku Labs Inc."
           Version="1.2.0.0"
-          UpgradeCode="78cca74b-3d55-43d6-b7c3-fd40b2832291"
+          UpgradeCode="78cca74b-3d55-43d6-b7c3-fd40b2832290"
           IconSourceFile="$(var.PublishDir)Assets\WindowIcon.ico">
 
     <BootstrapperApplication SourceFile="$(var.SakuBAPath)">

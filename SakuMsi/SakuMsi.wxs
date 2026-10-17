@@ -126,20 +126,10 @@
               FileRef="OverlayExeFile"
               ExeCommand="" />
 
-    <CustomAction Id="KillOverlayBeforeUninstall"
-              Execute="deferred"
-              Impersonate="no"
-              Return="ignore"
-              Directory="System64Folder"
-              ExeCommand="taskkill.exe /F /IM &quot;Saku Overclock.Overlay.exe&quot; /T" />
-
     <InstallExecuteSequence>
       <Custom Action="LaunchOverlayAfterInstall"
               After="InstallFinalize"
               Condition="NOT Installed" />
-      <Custom Action="KillOverlayBeforeUninstall"
-              Before="RemoveFiles"
-              Condition='REMOVE="ALL"' />
     </InstallExecuteSequence>
 
   </Package>

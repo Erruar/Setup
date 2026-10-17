@@ -205,7 +205,8 @@ public class InstallationViewModel : PropertyNotifyBase
 
     private void DetectBegin(object? sender, DetectBeginEventArgs e)
     {
-        _root.DetectState = RegistrationType.Full == e.RegistrationType ? DetectionState.Present : DetectionState.Absent;
+        // Allow Present for any non-None
+        _root.DetectState = e.RegistrationType != RegistrationType.None ? DetectionState.Present : DetectionState.Absent;
         SakuBA_App.Model?.PlannedAction = LaunchAction.Unknown;
     }
 
@@ -234,8 +235,12 @@ public class InstallationViewModel : PropertyNotifyBase
 
     private void DetectComplete(object? sender, DetectCompleteEventArgs e)
     {
-        _root.InstallState = InstallationState.Waiting;
-
+        if (_root.InstallState != InstallationState.Applied && _root.InstallState != InstallationState.Failed)
+        {
+            // Avoid Waiting when installation already completed
+            _root.InstallState = InstallationState.Waiting;
+        }
+        
         if (SakuBA_App.Model != null && SakuBA_App.Model.Command != null)
         {
             if (LaunchAction.Uninstall == SakuBA_App.Model.Command.Action && ResumeType.Arp != SakuBA_App.Model.Command.Resume)
