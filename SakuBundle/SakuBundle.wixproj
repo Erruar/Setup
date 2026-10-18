@@ -12,7 +12,7 @@
     </DefineConstants>
     <OutputType>Bundle</OutputType>
     <AcceptEula>wix7</AcceptEula>
-    <SuppressValidation>true</SuppressValidation>
+    <!--<SuppressValidation>true</SuppressValidation>-->
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SakuMsi\SakuMsi.wixproj" />
