@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 
   <Package Name="Saku Overclock"
            Manufacturer="Saku Labs Inc."
@@ -131,6 +131,17 @@
               After="InstallFinalize"
               Condition="NOT Installed" />
     </InstallExecuteSequence>
+
+    <util:CloseApplication Id="CloseOverlay"
+                           Target="Saku Overclock.Overlay.exe"
+                           CloseMessage="yes"
+                           EndSessionMessage="yes"
+                           ElevatedCloseMessage="yes"
+                           ElevatedEndSessionMessage="yes"
+                           RebootPrompt="no"
+                           PromptToContinue="no"
+                           TerminateProcess="1"
+                           Timeout="5" />
 
   </Package>
 </Wix>

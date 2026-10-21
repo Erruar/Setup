@@ -11,4 +11,8 @@
     <InstallerPlatform Condition=" '$(Platform)' == '' ">x64</InstallerPlatform>
     <SuppressIces>ICE03;ICE60</SuppressIces>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Util.wixext" Version="7.0.0" />
+  </ItemGroup>
 </Project>
