@@ -2,13 +2,13 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 
   <Package Name="Saku Overclock"
-           Manufacturer="Saku Labs Inc."
+           Manufacturer="Saku Labs Inc"
            Version="!(bind.fileVersion.MainExeFile)"
            UpgradeCode="78cca74b-3d55-43d6-b7c3-fd40b2832290"
            Scope="perMachine"
            Language="1033">
 
-    <SummaryInformation Description="Saku Overclock Installer" Manufacturer="Saku Labs Inc." />
+    <SummaryInformation Description="Saku Overclock Installer" Manufacturer="Saku Labs Inc" />
     
     <MediaTemplate EmbedCab="yes" />
     <MajorUpgrade DowngradeErrorMessage="A newer version of Saku Overclock is already installed." 

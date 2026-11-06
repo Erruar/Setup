@@ -1,4 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(MSBuildThisFileDirectory)..\..\Saku Overclock\Version.props"
+          Condition="Exists('$(MSBuildThisFileDirectory)..\..\Saku Overclock\Version.props')" />
+  
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
@@ -9,6 +13,10 @@
     <UseWPF>true</UseWPF>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <SelfContained>false</SelfContained>
+    <ClientVersion Condition="'$(ClientVersion)' == ''">1.1.0.0</ClientVersion>
+    <AssemblyVersion>$(ClientVersion)</AssemblyVersion>
+    <FileVersion>$(ClientVersion)</FileVersion>
+    <Version>$(ClientVersion)</Version>
     <RollForward>Major</RollForward>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <Nullable>enable</Nullable>
