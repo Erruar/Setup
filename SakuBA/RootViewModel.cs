@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Input;
@@ -50,7 +51,8 @@ public enum InstallerScenario
 
 public class RootViewModel : PropertyNotifyBase
 {
-    private const string ExpectedThumbprint = "71D4DBA8A8A89EE9EB0000000000000000000000"; 
+    private const string ExpectedThumbprintDebug = "D67B27146FDBA81B04961617BFDDCA255FC9120E"; 
+    private const string ExpectedThumbprintSignPath = "DC13C61A82DB0DF7DE1EB6D20F8BB273E9883951"; 
     private const string TargetExeName = "Saku Overclock.exe";
 
     private bool _isEnglish;
@@ -116,44 +118,35 @@ public class RootViewModel : PropertyNotifyBase
     #endregion
 
     #region Dynamic Data (Version & Digital Signature)
-    public string DisplayVersion
-    {
-        get
-        {
-            // Ищем собранный бинарь в директории публикации / запуска
-            string targetPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, TargetExeName);
-            if (File.Exists(targetPath))
-            {
-                var versionInfo = FileVersionInfo.GetVersionInfo(targetPath);
-                if (!string.IsNullOrEmpty(versionInfo.FileVersion))
-                {
-                    return versionInfo.FileVersion;
-                }
-            }
-            return "1.0.0.0"; 
-        }
-    }
+    public string DisplayVersion => Assembly.GetExecutingAssembly().GetName().Version?.ToString()  ?? "Unknown";
 
     public string DisplaySource
     {
         get
         {
-            string targetPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, TargetExeName);
-            if (File.Exists(targetPath))
+            var targetPath = SakuBA_App.Model?.Engine?
+                .GetVariableString("WixBundleOriginalSource");
+
+            if (string.IsNullOrWhiteSpace(targetPath) || !File.Exists(targetPath))
+                return IsEnglish ? "file" : "файл";
+
+            try
             {
-                try
+                // Now there are no alternatives to CreateFromSignedFile()
+#pragma warning disable SYSLIB0057
+                using var cert = X509Certificate.CreateFromSignedFile(targetPath);
+#pragma warning restore SYSLIB0057
+                
+                return cert.GetCertHashString() switch
                 {
-                    // TODO: Replace with WinTrust
-                    using var cert = X509Certificate2.CreateFromSignedFile(targetPath);
-                    if (cert.GetCertHashString().Equals(ExpectedThumbprint, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return "github.com";
-                    }
-                }
-                catch
-                {
-                    // Файл не подписан или ошибка чтения структуры
-                }
+                    ExpectedThumbprintDebug => "github.com (Debug)",
+                    ExpectedThumbprintSignPath => "github.com (SignPath)",
+                    _ => IsEnglish ? "file" : "файл"
+                };
+            }
+            catch
+            {
+                // Файл не подписан или ошибка чтения структуры
             }
             return IsEnglish ? "file" : "файл";
         }
