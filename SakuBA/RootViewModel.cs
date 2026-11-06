@@ -139,8 +139,8 @@ public class RootViewModel : PropertyNotifyBase
                 
                 return cert.GetCertHashString() switch
                 {
-                    ExpectedThumbprintDebug => "github.com (Debug)",
-                    ExpectedThumbprintSignPath => "github.com (SignPath)",
+                    ExpectedThumbprintDebug or
+                    ExpectedThumbprintSignPath => "github.com",
                     _ => IsEnglish ? "file" : "файл"
                 };
             }
